@@ -1,0 +1,24 @@
+name: Push Docker Image to GCS
+on: [push]
+jobs:
+    Build and Push to GCR:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: 'read'
+            id-token: 'write'
+        steps:
+            -name: checkout repo
+             uses: actions/checkout@v4
+            -name: GCP Auth
+             id: auth
+             uses: google-github-actions/auth@v2
+             with:
+               project_id: 'carsonmcneil'
+               workload_identity_provider: 'projects/982597505804/locations/global/workloadIdentityPools/github/providers/my-repo-fixed'
+               service_account: 'deploy@carsonmcneil.iam.gserviceaccount.com'
+            -uses: RafikFarhad/push-to-gcr-github-action@v5-rc1
+             with:
+                registry: us.gcr.io
+                project_id: 'carsonmcneil'
+                image_name: dsenv
+                image_tag: latest
